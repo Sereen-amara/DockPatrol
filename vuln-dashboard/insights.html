@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Insights</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>Security Insights</span>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="nav-item dashboard">
+            <a href="/index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+          </li>
+          <li class="nav-item upload">
+            <a href="/upload.html"><i class="fas fa-upload"></i><span>Upload & Scan</span></a>
+          </li>
+          <li class="nav-item insights  active">
+            <a href="/insights.html"><i class="fas fa-chart-line"></i><span>Risk Insights</span></a>
+          </li>
+          <li class="nav-item reports">
+            <a href="/results.html">
+              <i class="fas fa-file-alt"></i>
+              <span>Reports List</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="header">
+        <h1>Security Risk Insights</h1>
+        <div class="header-info">
+          <div class="info-card">
+            <i class="fas fa-clock"></i>
+            Last updated: <span id="last-updated">Loading…</span>
+          </div>
+        </div>
+      </header>
+
+
+      <section class="chart-container">
+        <h2><i class="fas fa-chart-bar"></i> Metrics</h2>
+        <div class="iframe-row">
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=1&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=6&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=2&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+      </section>
+      <section class="chart-container">
+
+        <div class="iframe-row">
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=10&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=8&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=9&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+      </section>
+      <section class="chart-container">
+        <h2><i class="fas fa-chart-bar"></i> System Metrics</h2>
+        <div class="iframe-row">
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=5&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=7&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+          <iframe
+            src="http://localhost:3000/d-solo/30256bd7-30bd-4909-bd80-a0cbf570d09c/vulndashboard?orgId=1&from=now-1h&to=now&refresh=10s&theme=light&panelId=4&kiosk"
+            width="450" height="200" frameborder="0" sandbox="allow-same-origin allow-scripts"></iframe>
+      </section>
+    </main>
+  </div>
+</body>
+
+<script>
+  //  every 30 seconds
+  window.addEventListener('DOMContentLoaded', () => {
+    const lastEl = document.getElementById('last-updated');
+
+    function refreshTimestamp() {
+      lastEl.textContent = new Date().toLocaleTimeString();
+    }
+
+    refreshTimestamp();
+    setInterval(refreshTimestamp, 30000);
+  });
+</script>
+
+</html>
+<!-- 
+
+References
+“AbortController - Web APIs | MDN.” MDN Web Docs, 26 July 2024, developer.mozilla.org/en-US/docs/Web/API/AbortController. Accessed 11 May 2025.
+“Array.prototype.flatMap() - JavaScript | MDN.” MDN Web Docs, 13 Mar. 2025, developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap. Accessed 11 May 2025.
+“Document: QuerySelector() Method - Web APIs | MDN.” MDN Web Docs, 10 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/Document/querySelector. Accessed 11 May 2025.
+“EventTarget: AddEventListener() Method - Web APIs | MDN.” MDN Web Docs, 28 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener. Accessed 11 May 2025.
+“Using FormData Objects - Web APIs | MDN.” MDN Web Docs, 3 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects. Accessed 11 May 2025.
+“Using the Fetch API - Web APIs | MDN.” MDN Web Docs, 28 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch. Accessed 11 May 2025.
+-->

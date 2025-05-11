@@ -1,0 +1,18 @@
+{
+    "input": {
+        "image": {
+            "signed": true,
+            "verified": true,
+            "vulnerabilities": [
+                {
+                    "id": "CVE-2022-1234",
+                    "severity": "CRITICAL"
+                },
+                {
+                    "id": "CVE-2023-5678",
+                    "severity": "HIGH"
+                }
+            ]
+        }
+    }
+}

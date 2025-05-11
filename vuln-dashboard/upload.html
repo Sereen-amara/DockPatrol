@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Upload & Scan</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Upload Page Specific Styles */
+    .upload-section {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .upload-card {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    .file-upload {
+      border: 2px dashed var(--primary);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .file-upload.highlight {
+      background: rgba(52, 152, 219, 0.1);
+      border-color: var(--primary-dark);
+    }
+
+    .file-upload label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .file-upload i {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .file-upload span {
+      font-size: 1.1rem;
+      color: var(--dark);
+    }
+
+    .file-upload input[type="file"] {
+      display: none;
+    }
+
+    .file-info {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn-submit {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background: var(--secondary);
+    }
+
+    .btn-submit:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+      background: var(--danger-dark);
+    }
+
+    .btn-submit i, .btn-cancel i {
+      margin-right: 0.75rem;
+    }
+
+    .status-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .status-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      font-size: 1.25rem;
+    }
+
+    .status-icon i {
+      color: white;
+    }
+
+    .status-icon.loading {
+      background: var(--warning);
+    }
+
+    .status-icon.success {
+      background: var(--success);
+    }
+
+    .status-icon.error {
+      background: var(--danger);
+    }
+
+    .status-icon.info {
+      background: var(--info);
+    }
+
+    .status-content {
+      flex: 1;
+    }
+
+    .status-content p {
+      margin-bottom: 0.5rem;
+    }
+
+    .status-hint {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .scan-results {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+    }
+
+    .scan-results li {
+      margin-bottom: 0.5rem;
+    }
+
+    .scan-results a {
+      display: flex;
+      align-items: center;
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .scan-results a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    .scan-results i {
+      margin-right: 0.5rem;
+    }
+
+    .progress-container {
+      margin-top: 1rem;
+      width: 100%;
+      background-color: var(--light-gray);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background-color: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-align: right;
+    }
+
+    .upload-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .upload-steps::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--light-gray);
+      z-index: 1;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--light-gray);
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .step.active .step-number {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .step.completed .step-number {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    .step.active .step-label {
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .upload-section {
+        padding: 0 1rem;
+      }
+      
+      .upload-card {
+        padding: 1.5rem;
+      }
+      
+      .file-upload {
+        padding: 1.5rem;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .file-upload i {
+        font-size: 2.5rem;
+      }
+      
+      .file-upload span {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-container">
+      <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>DockPatrol</span>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="nav-item dashboard">
+            <a href="/index.html">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item reports active">
+            <a href="/upload.html">
+              <i class="fas fa-upload"></i>
+              <span>Upload &amp; Scan</span>
+            </a>
+          </li>
+          <li class="nav-item insights">
+            <a href="/insights.html">
+              <i class="fas fa-chart-line"></i>
+              <span>Risk Insights</span>
+            </a>
+          </li>
+          <li class="nav-item reports">
+            <a href="/results.html">
+              <i class="fas fa-file-alt"></i>
+              <span>Reports List</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="header">
+        <h1>
+          <i class="fas fa-upload"></i>
+          <span>Upload Your Dockerized Application</span>
+        </h1>
+      </header>
+
+      <section class="upload-section">
+        <div class="upload-card">
+          <form id="upload-form">
+            <div class="upload-steps">
+              <div class="step active" id="step-upload">
+                <div class="step-number">1</div>
+                <div class="step-label">Upload</div>
+              </div>
+              <div class="step" id="step-scan">
+                <div class="step-number">2</div>
+                <div class="step-label">Scan</div>
+              </div>
+              <div class="step" id="step-results">
+                <div class="step-number">3</div>
+                <div class="step-label">Results</div>
+              </div>
+            </div>
+
+            <div class="file-upload">
+              <label for="archive">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span id="file-label">Choose a file or drag it here</span>
+                <div class="file-info" id="file-info"></div>
+                <input type="file" id="archive" name="archive" accept=".zip,.tar.gz" required>
+              </label>
+            </div>
+
+            <div class="btn-group">
+              <button type="submit" class="btn-submit" id="submit-btn" disabled>
+                <i class="fas fa-search"></i>
+                <span>Upload & Scan</span>
+              </button>
+              <button type="button" class="btn-cancel" id="cancel-btn" disabled>
+                <i class="fas fa-times"></i>
+                <span>Cancel</span>
+              </button>
+            </div>
+
+            <div class="progress-container" id="progress-container" style="display: none;">
+              <div class="progress-bar" id="progress-bar"></div>
+              <div class="progress-text" id="progress-text">0%</div>
+            </div>
+          </form>
+        </div>
+
+        <div id="status" class="status-card">
+          <div class="status-icon info">
+            <i class="fas fa-info-circle"></i>
+          </div>
+          <div class="status-content">
+            <p>Ready to scan your Dockerfile context</p>
+            <p class="status-hint">Upload a .zip or .tar.gz file containing your Dockerfile and related files</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Global variable to track the upload/scan process
+    let uploadController = null;
+    let isScanning = false;
+
+    document.getElementById('upload-form').onsubmit = async e => {
+      e.preventDefault();
+      const file = document.getElementById('archive').files[0];
+      if (!file) return;
+
+      // this will update UI for scanning state
+      isScanning = true;
+      updateUIForScanning();
+      
+      //this reates new AbortController for the fetch request
+      uploadController = new AbortController();
+      
+      const fd = new FormData();
+      fd.append('archive', file);
+
+      try {
+        // this how progress bar
+        document.getElementById('progress-container').style.display = 'block';
+        
+        // this will the pdate status
+        updateStatus('Uploading and scanning...', 'loading');
+        
+        // this will tart the upload/scan process
+        const r = await fetch('/api/scan', {
+          method: 'POST',
+          body: fd,
+          signal: uploadController.signal
+        });
+        
+        if (!r.ok) throw new Error(await r.text());
+        
+        const { trivy } = await r.json();
+        updateStatus('Scan complete!', 'success', trivy);
+        completeSteps();
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          updateStatus('Scan cancelled', 'info');
+        } else {
+          updateStatus(`Error: ${err.message}`, 'error');
+        }
+      } finally {
+        // Reset state
+        isScanning = false;
+        uploadController = null;
+        document.getElementById('cancel-btn').disabled = true;
+        document.getElementById('progress-container').style.display = 'none';
+      }
+    };
+
+    // Cthis handels the cancel button 
+    document.getElementById('cancel-btn').addEventListener('click', () => {
+      if (uploadController && isScanning) {
+        uploadController.abort();
+        resetSteps();
+      }
+    });
+
+    // ile input change handler
+    document.getElementById('archive').addEventListener('change', function(e) {
+      if (this.files.length > 0) {
+        const file = this.files[0];
+        document.getElementById('file-label').textContent = file.name;
+        document.getElementById('file-info').textContent = `Size: ${formatFileSize(file.size)}`;
+        document.getElementById('submit-btn').disabled = false;
+      } else {
+        document.getElementById('file-label').textContent = 'Choose a file or drag it here';
+        document.getElementById('file-info').textContent = '';
+        document.getElementById('submit-btn').disabled = true;
+      }
+    });
+
+    // Drag and drop handlers
+    const fileUpload = document.querySelector('.file-upload');
+    const fileInput = document.getElementById('archive');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileUpload.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileUpload.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileUpload.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+      fileUpload.classList.add('highlight');
+    }
+
+    function unhighlight() {
+      fileUpload.classList.remove('highlight');
+    }
+
+    fileUpload.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      fileInput.files = files;
+      
+      if (files.length > 0) {
+        const file = files[0];
+        document.getElementById('file-label').textContent = file.name;
+        document.getElementById('file-info').textContent = `Size: ${formatFileSize(file.size)}`;
+        document.getElementById('submit-btn').disabled = false;
+      }
+    }
+
+    // Helper functions
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function updateStatus(message, type, trivyUrl = null) {
+      const status = document.getElementById('status');
+      let iconClass, icon;
+      
+      switch(type) {
+        case 'loading':
+          iconClass = 'loading';
+          icon = 'fa-spinner fa-spin';
+          break;
+        case 'success':
+          iconClass = 'success';
+          icon = 'fa-check-circle';
+          break;
+        case 'error':
+          iconClass = 'error';
+          icon = 'fa-exclamation-circle';
+          break;
+        default:
+          iconClass = 'info';
+          icon = 'fa-info-circle';
+      }
+      
+      let resultsHtml = '';
+      if (trivyUrl) {
+        resultsHtml = `
+          <ul class="scan-results">
+            <li><a href="index.html"><i class="fas fa-tachometer-alt"></i> Go to Dashboard</a></li>
+          </ul>
+        `;
+      }
+      
+      status.innerHTML = `
+        <div class="status-icon ${iconClass}">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="status-content">
+          <p>${message}</p>
+          ${resultsHtml}
+        </div>
+      `;
+    }
+
+    function updateUIForScanning() {
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('cancel-btn').disabled = false;
+      document.getElementById('archive').disabled = true;
+      document.getElementById('step-scan').classList.add('active');
+    }
+
+    function completeSteps() {
+      document.getElementById('step-scan').classList.remove('active');
+      document.getElementById('step-scan').classList.add('completed');
+      document.getElementById('step-results').classList.add('active');
+    }
+
+    function resetSteps() {
+      document.getElementById('step-scan').classList.remove('active');
+      document.getElementById('step-results').classList.remove('active');
+      document.getElementById('step-upload').classList.add('active');
+    }
+
+
+    function simulateProgress() {
+      let progress = 0;
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      
+      const interval = setInterval(() => {
+        if (progress >= 100 || !isScanning) {
+          clearInterval(interval);
+          return;
+        }
+        
+        progress += Math.random() * 10;
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `${Math.round(progress)}%`;
+      }, 300);
+    }
+  </script>
+</body>
+</html>
+
+<!-- 
+
+References
+“AbortController - Web APIs | MDN.” MDN Web Docs, 26 July 2024, developer.mozilla.org/en-US/docs/Web/API/AbortController. Accessed 11 May 2025.
+“Array.prototype.flatMap() - JavaScript | MDN.” MDN Web Docs, 13 Mar. 2025, developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap. Accessed 11 May 2025.
+“Document: QuerySelector() Method - Web APIs | MDN.” MDN Web Docs, 10 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/Document/querySelector. Accessed 11 May 2025.
+“EventTarget: AddEventListener() Method - Web APIs | MDN.” MDN Web Docs, 28 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener. Accessed 11 May 2025.
+“Using FormData Objects - Web APIs | MDN.” MDN Web Docs, 3 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects. Accessed 11 May 2025.
+“Using the Fetch API - Web APIs | MDN.” MDN Web Docs, 28 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch. Accessed 11 May 2025.
+-->

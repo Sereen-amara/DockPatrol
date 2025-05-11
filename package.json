@@ -1,0 +1,45 @@
+{
+  "scripts": {
+    "test": "jest --env=jsdom",
+    "coverage": "jest --env=jsdom --coverage"
+  },
+  "devDependencies": {
+    "cross-fetch": "^4.1.0",
+    "form-data": "^4.0.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-html-reporters": "^3.1.7",
+    "node-fetch": "^3.3.2",
+    "supertest": "^7.1.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "roots": [
+      "<rootDir>/__tests__"
+    ],
+    "testMatch": [
+      "**/__tests__/unit/**/*.unit.test.[jt]s?(x)",
+      "**/__tests__/integration/**/*.integration.test.[jt]s?(x)"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "html"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporters",
+        {
+          "publicPath": "./html-report",
+          "filename": "report.html",
+          "expand": true,
+          "theme": "light",
+          "pageTitle": "DockPatrol Test Report"
+        }
+      ]
+    ]
+  }
+}

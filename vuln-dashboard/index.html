@@ -1,0 +1,562 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vulnerability Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>Dock-Patrol</span>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="nav-item dashboard active">
+            <a href="/index.html">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item upload">
+            <a href="/upload.html">
+              <i class="fas fa-upload"></i>
+              <span>Upload &amp; Scan</span>
+            </a>
+          </li>
+          <li class="nav-item insights">
+            <a href="/insights.html">
+              <i class="fas fa-chart-line"></i>
+              <span>Risk Insights</span>
+            </a>
+          </li>
+          <li class="nav-item reports">
+            <a href="/results.html">
+              <i class="fas fa-file-alt"></i>
+              <span>Reports List</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="header">
+        <h1>Vulnerability Dashboard</h1>
+        <h2 id="scanned-app" class="scanned-app">Scanned: <span id="scanned-name">Loading…</span></h2>
+        <div class="header-info">
+          <div class="info-card">
+            <i class="fas fa-clock"></i>
+            <span id="last-updated">Last updated: Just now</span>
+          </div>
+          <button id="clear-btn" class="btn-clear">
+            <i class="fas fa-trash-alt"></i>
+            <span>Clear Data</span>
+          </button>
+
+        </div>
+      </header>
+
+
+      <!-- Summary Cards -->
+      <section class="summary-section">
+        <h2 class="section-title">
+          <i class="fas fa-chart-pie"></i>
+          <span>Scan Overview</span>
+        </h2>
+
+        <!-- Trivy Vulnerabilities -->
+        <div class="summary-group">
+          <h3 class="summary-group-title">
+            <i class="fas fa-bug"></i>
+            <span>Container Findings</span>
+          </h3>
+          <div class="summary-grid">
+            <div class="summary-card critical">
+              <div class="card-icon"><i class="fas fa-skull"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="critical-count">0</div>
+                <div class="card-label">Critical</div>
+              </div>
+            </div>
+            <div class="summary-card high">
+              <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="high-count">0</div>
+                <div class="card-label">High</div>
+              </div>
+            </div>
+            <div class="summary-card medium">
+              <div class="card-icon"><i class="fas fa-exclamation-circle"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="medium-count">0</div>
+                <div class="card-label">Medium</div>
+              </div>
+            </div>
+            <div class="summary-card low">
+              <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="low-count">0</div>
+                <div class="card-label">Low</div>
+              </div>
+            </div>
+            <div class="summary-card unknown">
+              <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="unknown-count">0</div>
+                <div class="card-label">Unknown</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SonarQube Findings -->
+        <div class="summary-group">
+          <h3 class="summary-group-title">
+            <i class="fas fa-code"></i>
+            <span>Source Code Findings</span>
+          </h3>
+          <div class="summary-grid">
+            <div class="summary-card blocker">
+              <div class="card-icon"><i class="fas fa-ban"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="sonar-blocker-count">0</div>
+                <div class="card-label">Blocker</div>
+              </div>
+            </div>
+            <div class="summary-card sonar-critical">
+              <div class="card-icon"><i class="fas fa-radiation"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="sonar-critical-count">0</div>
+                <div class="card-label">Critical</div>
+              </div>
+            </div>
+            <div class="summary-card major">
+              <div class="card-icon"><i class="fas fa-times-circle"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="sonar-major-count">0</div>
+                <div class="card-label">Major</div>
+              </div>
+            </div>
+            <div class="summary-card minor">
+              <div class="card-icon"><i class="fas fa-minus-circle"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="sonar-minor-count">0</div>
+                <div class="card-label">Minor</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="summary-group">
+          <h3 class="summary-group-title">
+            <i class="fas fa-shield-alt"></i>
+            <span>System Status</span>
+          </h3>
+          <div class="summary-grid">
+            <div class="summary-card info">
+              <div class="card-icon"><i class="fas fa-shield-virus"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="opa-status">—</div>
+                <div class="card-label">OPA Status</div>
+              </div>
+            </div>
+            <div class="summary-card info">
+              <div class="card-icon"><i class="fas fa-server"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="prom-up-count">—</div>
+                <div class="card-label">Prometheus Targets</div>
+              </div>
+            </div>
+            <div class="summary-card info">
+              <div class="card-icon"><i class="fas fa-search"></i></div>
+              <div class="card-content">
+                <div class="card-value" id="dast-count">0</div>
+                <div class="card-label">Image Vulnerabilities</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts-section">
+        <div class="chart-container">
+          <h2 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            <span>Severity Distribution</span>
+          </h2>
+          <div class="chart-wrapper">
+            <canvas id="severity-chart"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Tables Section -->
+      <section class="tables-section">
+        <!-- Trivy Table -->
+        <div class="table-container">
+          <h2 class="section-title">
+            <i class="fas fa-table"></i>
+            <span>Vulnerabilities Detail</span>
+          </h2>
+          <div class="table-wrapper scroll-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>CVE</th>
+                  <th>Package</th>
+                  <th>Version</th>
+                  <th>Severity</th>
+
+                </tr>
+              </thead>
+              <tbody id="vuln-table-body">
+                <tr>
+                  <td colspan="6">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Sonar Table -->
+        <div class="table-container">
+          <h2 class="section-title">
+            <i class="fas fa-code"></i>
+            <span>Source Code Issues</span>
+          </h2>
+          <div class="table-wrapper scroll-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rule</th>
+                  <th>File</th>
+                  <th>Line</th>
+                  <th>Message</th>
+                  <th>Severity</th>
+                </tr>
+              </thead>
+              <tbody id="sonar-issues-body">
+                <tr>
+                  <td colspan="5">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let chartInstance;
+
+    async function loadResults() {
+      await Promise.all([
+        loadOPA(),
+        loadPrometheus(),
+        loadSonarIssues(),
+        loadTrivy()
+
+      ]);
+      updateLastUpdated();
+    }
+
+    function updateLastUpdated() {
+      const now = new Date();
+      document.getElementById('last-updated').textContent =
+        `Last updated: ${now.toLocaleTimeString()}`;
+    }
+
+    async function loadOPA() {
+      try {
+        const res = await fetch('/api/opa/v1/status');
+        if (!res.ok) {
+          document.getElementById('opa-status').textContent = 'Unhealthy';
+          return;
+        }
+        const json = await res.json();
+        document.getElementById('opa-status').textContent =
+          json.health === 'ok' ? 'Healthy' : 'Unhealthy';
+      } catch {
+        document.getElementById('opa-status').textContent = 'Unhealthy';
+      }
+    }
+
+    async function loadPrometheus() {
+      try {
+        const res = await fetch('/api/prometheus/api/v1/targets');
+        const payload = await res.json();
+        if (payload.status !== 'success') throw new Error('Prometheus API error');
+        const upCount = payload.data.activeTargets
+          .filter(t => t.health === 'up').length;
+        document.getElementById('prom-up-count').textContent = upCount;
+      } catch {
+        document.getElementById('prom-up-count').textContent = '—';
+      }
+    }
+
+    async function loadSonarIssues() {
+      const tbody = document.getElementById('sonar-issues-body');
+      try {
+        const key = encodeURIComponent('vuln-dashboard');
+        const res = await fetch(
+          `/api/sonarqube/api/issues/search?projectKeys=${key}&ps=500&p=1`
+        );
+        const json = await res.json();
+        const all = json.issues || [];
+
+        const counts = { BLOCKER: 0, CRITICAL: 0, MAJOR: 0, MINOR: 0, INFO: 0 };
+        all.forEach(i => {
+          const sev = i.severity?.toUpperCase();
+          if (counts[sev] !== undefined) counts[sev]++;
+        });
+        document.getElementById('sonar-blocker-count').textContent = counts.BLOCKER;
+        document.getElementById('sonar-critical-count').textContent = counts.CRITICAL;
+        document.getElementById('sonar-major-count').textContent = counts.MAJOR;
+        document.getElementById('sonar-minor-count').textContent = counts.MINOR;
+
+        tbody.innerHTML = all.length
+          ? all.map(i => `
+            <tr>
+              <td>${i.rule}</td>
+              <td>${i.component.split(':').pop()}</td>
+              <td>${i.line || '—'}</td>
+              <td>${i.message}</td>
+              <td class="severity-${i.severity.toLowerCase()}">${i.severity}</td>
+            </tr>
+          `).join('')
+          : '<tr><td colspan="5">No issues found</td></tr>';
+      } catch (err) {
+        console.error('Failed to load Sonar issues:', err);
+        ['blocker', 'critical', 'major', 'minor'].forEach(s =>
+          document.getElementById(`sonar-${s}-count`).textContent = '0'
+        );
+        tbody.innerHTML = `<tr><td colspan="5">Error loading issues</td></tr>`;
+      }
+    }
+
+    async function loadTrivy() {
+      try {
+        const res = await fetch('/trivy-results/latest.json');
+        const data = await res.json();
+        const vulns = (data.Results || []).flatMap(r => r.Vulnerabilities || []);
+        const counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, UNKNOWN: 0 };
+        vulns.forEach(v => counts[v.Severity] = (counts[v.Severity] || 0) + 1);
+
+        ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'].forEach(lvl => {
+          document.getElementById(lvl.toLowerCase() + '-count').textContent = counts[lvl];
+        });
+        document.getElementById('dast-count').textContent = vulns.length;
+
+
+        const ctx = document.getElementById('severity-chart').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+
+        if (typeof window.setupChart === 'function') {
+          window.setupChart(ctx, {
+            labels: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'],
+            values: [
+              counts.CRITICAL,
+              counts.HIGH,
+              counts.MEDIUM,
+              counts.LOW,
+              counts.UNKNOWN
+            ]
+          });
+        } else {
+          chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'],
+              datasets: [{
+                label: 'Vulnerabilities',
+                data: [
+                  counts.CRITICAL,
+                  counts.HIGH,
+                  counts.MEDIUM,
+                  counts.LOW,
+                  counts.UNKNOWN
+                ],
+                backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#6c757d'],
+                borderColor: ['#c82333', '#e36209', '#e0a800', '#218838', '#5a6268'],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: { duration: 0 },
+              scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+              },
+              plugins: { legend: { display: false } }
+            }
+          });
+        }
+
+        const tbody = document.getElementById('vuln-table-body');
+        tbody.innerHTML = vulns.length
+          ? vulns.map(v => `
+            <tr>
+              <td>${v.VulnerabilityID}</td>
+              <td>${v.PkgName}</td>
+              <td>${v.InstalledVersion}</td>
+              <td class="severity-${v.Severity.toLowerCase()}">${v.Severity}</td>
+            </tr>
+          `).join('')
+          : '<tr><td colspan="6">No data.</td></tr>';
+      } catch {
+        clearDashboard();
+      }
+    }
+
+
+
+    function clearDashboard() {
+      ['critical', 'high', 'medium', 'low', 'unknown', 'dast', 'sast'].forEach(id => {
+        const el = document.getElementById(id + '-count');
+        if (el) el.textContent = id === 'sast' ? '0' : '—';
+      });
+      ['opa-status', 'prom-up-count'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '—';
+      });
+      const qEl = document.getElementById('sonar-quality');
+      if (qEl) qEl.textContent = '—';
+      ['blocker', 'critical', 'major', 'minor'].forEach(sev => {
+        const el = document.getElementById(`sonar-${sev}-count`);
+        if (el) el.textContent = '0';
+      });
+      const tbodyMap = {
+        'vuln-table-body': '<tr><td colspan="6">No data.</td></tr>',
+        'sonar-issues-body': '<tr><td colspan="5">No data.</td></tr>',
+
+      };
+      for (const [id, html] of Object.entries(tbodyMap)) {
+        const b = document.getElementById(id);
+        if (b) b.innerHTML = html;
+      }
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+    }
+
+    async function updateScannedApp() {
+      try {
+        const res = await fetch('/api/uploads');
+        const { uploads } = await res.json();
+        if (!uploads.length) {
+          document.getElementById('scanned-name').textContent = '—';
+          return;
+        }
+
+        const latest = uploads.sort((a, b) => b.timestamp - a.timestamp)[0];
+
+        document.getElementById('scanned-name').textContent = latest.project;
+
+        const badge = document.getElementById('quality-gate-badge');
+        badge.src =
+          `/api/sonarqube/api/project_badges/measure?project=${encodeURIComponent(latest.project)}&metric=alert_status&token=YOUR_TOKEN`;
+      } catch (err) {
+        console.error('updateScannedApp error', err);
+        document.getElementById('scanned-name').textContent = 'Error';
+      }
+    }
+
+
+
+    async function clearAll() {
+      await fetch(
+        '/api/sonarqube/api/projects/delete?project=vuln-dashboard',
+        { method: 'POST' }
+      ).catch(console.error);
+      await fetch('/api/clear', { method: 'POST' }).catch(console.error);
+      clearDashboard();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadResults();
+      updateScannedApp();
+      document.getElementById('clear-btn').addEventListener('click', clearAll);
+      setInterval(loadResults, 30000);
+      setInterval(updateScannedApp, 30000);
+    });
+
+    if (typeof window.JEST_WORKER_ID !== 'undefined') {
+      function refreshTimestamp() {
+        const el = document.getElementById('last-updated');
+        el.textContent = new Date().toLocaleTimeString();
+      }
+      window.refreshTimestamp = refreshTimestamp;
+
+      function renderVulnRow(v) {
+        return `
+        <tr data-id="${v.id}">
+          <td>${v.VulnerabilityID}</td>
+          <td>${v.PkgName}</td>
+          <td>${v.InstalledVersion}</td>
+          <td class="severity-${v.Severity.toLowerCase()}">${v.Severity}</td>
+          <td>${v.Description || ''}</td>
+        </tr>
+      `;
+      }
+      window.renderVulnRow = renderVulnRow;
+
+      window.__realGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function () {
+        if (!this.id) this.id = `chart-${Math.random().toString(36).substr(2, 5)}`;
+        return { canvas: this };
+      };
+
+      window.charts = {};
+      function setupChart(ctx, { labels, values }) {
+        const id = ctx.canvas.id;
+        window.charts[id] = {
+          config: {
+            data: { labels, datasets: [{ data: values }] }
+          }
+        };
+      }
+      window.setupChart = setupChart;
+
+      function updateDashboard() {
+        loadResults();
+      }
+      window.updateDashboard = updateDashboard;
+    }
+  </script>
+
+</body>
+
+</html>
+
+<!-- 
+
+References
+“AbortController - Web APIs | MDN.” MDN Web Docs, 26 July 2024, developer.mozilla.org/en-US/docs/Web/API/AbortController. Accessed 11 May 2025.
+“Array.prototype.flatMap() - JavaScript | MDN.” MDN Web Docs, 13 Mar. 2025, developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap. Accessed 11 May 2025.
+“Document: QuerySelector() Method - Web APIs | MDN.” MDN Web Docs, 10 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/Document/querySelector. Accessed 11 May 2025.
+“EventTarget: AddEventListener() Method - Web APIs | MDN.” MDN Web Docs, 28 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener. Accessed 11 May 2025.
+“Using FormData Objects - Web APIs | MDN.” MDN Web Docs, 3 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects. Accessed 11 May 2025.
+“Using the Fetch API - Web APIs | MDN.” MDN Web Docs, 28 Apr. 2025, developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch. Accessed 11 May 2025.
+-->

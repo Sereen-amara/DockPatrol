@@ -1,0 +1,133 @@
+version: '3'
+
+services:
+  scan-service:
+    build:
+      context: ./vuln-dashboard/scan-service
+      dockerfile: Dockerfile
+    container_name: scan-service
+    environment:
+      - SONAR_TOKEN=squ_92bfe08368fe070b577b4f6e88a65208a32af88d
+    ports:
+      - "3001:3001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./uploads:/usr/src/app/uploads
+      - ./trivy-results:/usr/src/app/trivy-results
+      - ./sonar-results:/usr/src/app/sonar-results
+    privileged: true
+    networks:
+      - app_network
+
+  dashboard:
+    image: nginx:latest
+    container_name: vuln-dashboard
+    ports:
+      - "8081:80"
+    volumes:
+      - ./vuln-dashboard:/usr/share/nginx/html:ro
+      - ./trivy-results:/etc/nginx/trivy-results:ro
+      - ./vuln-dashboard/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - scan-service
+      - opa
+    networks:
+      - app_network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - app_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - node-exporter
+    networks:
+      - app_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true      
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer 
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:14
+    container_name: sonarqube-db
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    volumes:
+      - sonarqube_db:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    depends_on:
+      - postgres
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    networks:
+      - app_network
+
+  opa:
+    image: openpolicyagent/opa:latest
+    container_name: opa
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./opa-policies:/policies
+    command:
+      - run
+      - --server
+      - --addr
+      - 0.0.0.0:8181
+      - --log-level=debug
+      - --set=decision_logs.console=true
+      - --set=status.console=true
+      - --set=server.cors.allowed_origins=["*"]
+      - /policies
+    networks:
+      - app_network
+    restart: unless-stopped
+
+volumes:
+  grafana_data:
+  sonarqube_db:
+  sonarqube_logs:
+  sonarqube_extensions:
+
+networks:
+  app_network:
+    driver: bridge
