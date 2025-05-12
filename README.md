@@ -1,66 +1,82 @@
-<<<<<<< HEAD
-# Docker-Project
+# DockPatrol
 
-=======
->>>>>>> master
-## Disclaimer
-This repository contains a vulnerable PHP file for testing purposes only. Use it responsibly in a controlled environment. 
-DO NOT deploy this code to production systems.
+A simple guide to set up, launch, and use DockPatrol for scanning Docker images with Trivy and SonarQube.
 
+---
 
-This application is designed to provide a dashboard to monitor vulnerabilities identified through  Trivy and SonarQube, alongside system metrics from Prometheus. It allows users to visualize vulnerabilities categorized by severity and source, enabling efficient vulnerability management.
+## Prerequisites
 
+* Docker & Docker Compose installed
+* Node.js & npm installed
 
+---
 
-Vulnerability Breakdown:
-Displays vulnerabilities identified by Trivy (DAST) and SonarQube (SAST).
-Segregates vulnerabilities into Critical, High, Medium, and Low categories.
- 
-Charts:
-2 chart categorized into SAST and DAST.
-Prometheus metrics visualized for system monitoring (e.g., CPU usage, memory usage, and service availability).
+## Step 1: Setup and Launch
 
-Trivy: Scans for container vulnerabilities (DAST).
-SonarQube: Scans code for static vulnerabilities (SAST).
-Prometheus: System performance metrics.
+### 1. Clone the Repository
 
+```bash
+git clone https://github.com/Sereen-amara/DockPatrol
+cd DockPatrol
+```
 
-Setup Instructions: 
+### 2. Install Dependencies
 
-Step 1:
-git clone <repository-url> 
-cd <repository-folder>
+In the project root, run:
 
-n
-Step 2:
-docker-compose up --build
+```bash
+npm install
+```
 
-Step 3: 
-Access the following services:
+### 3. Prepare Storage Directories
 
-Vulnerability Dashboard: http://localhost:8081
-PHP Application: http://localhost:8080
-SonarQube: http://localhost:9000
-Prometheus: http://localhost:9090
+Ensure these folders exist alongside your code:
 
+* `uploads`
+* `trivy-results`
+* `sonar-results`
 
-tep 3: Run Scans
-Trivy: Run the following command to generate scan results:
+You can create them with:
 
-trivy fs --format json -o trivy-results/php-vuln.json 
+```bash
+mkdir uploads trivy-results sonar-results
+```
 
+### 4. Start All Services
 
-Usage: 
-Access the Vulnerability Dashboard.
-View identified vulnerabilities categorized as:
-Critical
-High
-Medium
-Low
+From the project root, run:
 
-See the the charts between SAST (SonarQube) and DAST (Trivy).
-<<<<<<< HEAD
-Use the Prometheus metrics to monitor system health.
-=======
-Use the Prometheus metrics to monitor system health.
->>>>>>> master
+```bash
+docker compose up
+```
+
+---
+
+## Step 2: Verify and Use
+
+### 1. Verify Services
+
+* **Dashboard UI:** [http://localhost:8081](http://localhost:8081)
+
+Ensure all containers are healthy and the dashboard is reachable.
+
+### 2. Run a Scan
+
+1. In the Dashboard UI, go to **Upload**
+2. Select a `.zip` or `.tar.gz` containing your `Dockerfile` (plus any context files)
+3. Click **Start scan**
+4. When it finishes, view or download the Trivy and Sonar reports
+
+### 3. Run Automated Tests
+
+* **Full test suite:**
+
+  ```bash
+  npm test
+  ```
+
+* **Coverage report:**
+
+  ```bash
+  npm run coverage
+  ```
